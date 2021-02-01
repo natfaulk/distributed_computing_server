@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/natfaulk/distributed_computing_server/internal/clients"
 
@@ -16,7 +18,7 @@ import (
 
 var logger *log.Logger = nflogger.Make("Server")
 
-const serverPort int = 3000
+var serverPort int = 3000
 
 var taskpool tasks.Taskpool = tasks.NewTaskpool()
 var clientlist clients.ClientList
@@ -28,6 +30,15 @@ type statusJSON struct {
 
 // BeginServer starts web server
 func BeginServer() {
+	tServerPort := os.Getenv("SERVER_PORT")
+	if tServerPort != "" {
+		if iServerPort, err := strconv.Atoi(tServerPort); err == nil {
+			serverPort = iServerPort
+		} else {
+			logger.Print("Failed to parse server port from env file")
+		}
+	}
+
 	router := httprouter.New()
 	router.GET("/", rootHandler)
 	router.POST("/get_task", getTaskHandler)
