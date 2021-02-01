@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+
+  <link rel="stylesheet" href="static/css/index.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div>
+      <table>
+        <tr>
+          <th>Client ID</th>
+          <th>Last Seen</th>
+        </tr>
+        <tr v-for="client in clients">
+          <td>{{truncateID(client.id)}}</td>
+          <td>{{humanTime(client.lastseen)}}</td>
+        </tr>
+    </div>
+    <div>
+      <table>
+        <tr>
+          <th>Task</th>
+          <th>Task ID</th>
+          <th>Task Status</th>
+          <th>Client ID</th>
+          <th>Time Added</th>
+          <th>Time Started</th>
+        </tr>
+        <tr v-for="task in tasks">
+          <td>{{task.params}}</td>
+          <td>{{truncateID(task.id)}}</td>
+          <td><span 
+            class="status_back"
+            v-bind:class="{
+              status_complete: task.status=='COMPLETE',
+              status_running: task.status=='RUNNING',
+              status_available: task.status=='AVAILABLE'
+            }"
+            >{{task.status}}</span></td>
+          <td>{{truncateID(task.client)}}</td>
+          <td>{{humanTime(task.timeAdded)}}</td>
+          <td>{{humanTime(task.timeStarted)}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <script src="static/js/index.js"></script>
+</body>
+</html>
