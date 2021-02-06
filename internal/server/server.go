@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/natfaulk/distributed_computing_server/internal/clients"
+	"github.com/tomasen/realip"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/natfaulk/distributed_computing_server/internal/nflogger"
@@ -91,8 +92,13 @@ func pingHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params)
 		return
 	}
 
-	logger.Printf("Ping from device %s", id)
-	clientlist.Ping(id)
+	// hostname and version are optional
+	hostname := req.Form.Get("hostname")
+	clientVersion := req.Form.Get("clientVersion")
+	clientIP := realip.FromRequest(req)
+
+	logger.Printf("Ping from device %s at ip %s", id, clientIP)
+	clientlist.Ping(id, hostname, clientVersion, clientIP)
 	fmt.Fprint(w, "ack")
 }
 
@@ -115,10 +121,15 @@ func getTaskHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Para
 		return
 	}
 
-	logger.Printf("Device %s requested a job", id)
+	// hostname and version are optional
+	hostname := req.Form.Get("hostname")
+	clientVersion := req.Form.Get("clientVersion")
+	clientIP := realip.FromRequest(req)
+
+	logger.Printf("Device %s at ip %s requested a job", id, clientIP)
 
 	task, ok := taskpool.GetTask(id)
-	clientlist.Ping(id)
+	clientlist.Ping(id, hostname, clientVersion, clientIP)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

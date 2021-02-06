@@ -14,10 +14,16 @@
       <table>
         <tr>
           <th>Client ID</th>
+          <th>Client Hostname</th>
+          <th>Client Version</th>
+          <th>Client IP</th>
           <th>Last Seen</th>
         </tr>
         <tr v-for="client in clients">
           <td>{{truncateID(client.id)}}</td>
+          <td>{{client.hostname}}</td>
+          <td>{{client.version}}</td>
+          <td>{{client.ip}}</td>
           <td>{{humanTime(client.lastseen)}}</td>
         </tr>
     </div>
