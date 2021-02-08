@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maxUploadSize = 100 * 1000 * 1000
+	maxUploadSize = 500 * 1000 * 1000
 )
 
 func uploadHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
