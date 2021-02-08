@@ -19,7 +19,8 @@ const (
 	running   string = "RUNNING"
 	complete  string = "COMPLETE"
 
-	noTime int64 = -1
+	noTime    int64 = -1
+	staleTime int64 = 2 * 60 * 60 // Two hours, should pull out to a config file
 )
 
 // Task holds all the info for a task
@@ -50,6 +51,13 @@ func NewTaskpool() Taskpool {
 	return tp
 }
 
+// IsStale checks if job should have finished by now
+func (task *Task) IsStale() bool {
+	stale := (time.Now().Unix() - task.TimeStarted) > staleTime
+
+	return task.Status == running && stale
+}
+
 // AddTask adds a task to the Taskpool
 func (tp *Taskpool) AddTask(_params string) {
 	t := NewTask(_params)
@@ -61,7 +69,7 @@ func (tp *Taskpool) AddTask(_params string) {
 // as well as a boolean indicating whether a task has been returned
 func (tp *Taskpool) GetTask(_clientID string) (Task, bool) {
 	for i, task := range tp.Tasks {
-		if task.Status == available {
+		if task.Status == available || task.IsStale() {
 			tp.Tasks[i].Status = running
 			tp.Tasks[i].Client = _clientID
 			tp.Tasks[i].TimeStarted = time.Now().Unix()
